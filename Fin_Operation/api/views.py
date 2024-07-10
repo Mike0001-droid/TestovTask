@@ -1,6 +1,7 @@
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework import generics
 from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import AllowAny
@@ -8,6 +9,7 @@ from api.models import BankAccount, Transactions
 from api.serializers import BankAccountSerializer, TransactionsSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from api.filters import DateFilter
+from api.schemas import FilterSchema
 
 
 class BankAccountViewSet(GenericViewSet):
@@ -35,8 +37,23 @@ class TransactionsViewSet(GenericViewSet):
     permission_classes = (AllowAny, )
     filter_backends = (DjangoFilterBackend,)
     filterset_class = DateFilter
+    
+    @action(
+            detail=False, 
+            methods=['get'], 
+            url_path='filters/amount_from=(?P<amount_from>[a-zA-Z0-9_]+)/amount_to=(?P<amount_to>[a-zA-Z0-9_]+)',
+            url_name='filters'
+    )
+    def filters(self, request, amount_from, amount_to):
+        queryset = self.get_queryset().filter(
+            amount__range=[amount_from, amount_to]
+        )
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def list(self, request):
+        print(Transactions.objects.filter(amount__range=[16, 20]))
+        print(Transactions.objects.filter(account__in=[1,3]))
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
