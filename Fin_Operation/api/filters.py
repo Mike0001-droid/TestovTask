@@ -2,7 +2,7 @@ from django_filters import rest_framework as filters
 from api.models import Transactions
 
 
-class DateFilter(filters.FilterSet):
+class TransactionsFilter(filters.FilterSet):
     account = filters.AllValuesMultipleFilter(field_name="account")
     amount = filters.RangeFilter()
     date = filters.DateFromToRangeFilter()

@@ -8,8 +8,7 @@ from rest_framework.permissions import AllowAny
 from api.models import BankAccount, Transactions
 from api.serializers import BankAccountSerializer, TransactionsSerializer
 from django_filters.rest_framework import DjangoFilterBackend
-from api.filters import DateFilter
-from api.schemas import FilterSchema
+from api.filters import TransactionsFilter
 
 
 class BankAccountViewSet(GenericViewSet):
@@ -36,7 +35,7 @@ class TransactionsViewSet(GenericViewSet):
     serializer_class = TransactionsSerializer
     permission_classes = (AllowAny, )
     filter_backends = (DjangoFilterBackend,)
-    filterset_class = DateFilter
+    filterset_class = TransactionsFilter
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
